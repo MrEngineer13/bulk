@@ -3,6 +3,9 @@ import os
 import re
 import argparse
 
+# constants
+SCRIPT = "bulk.py"
+
 # modify filename
 def rename_convension(filename):
 
@@ -23,16 +26,37 @@ def rename_convension(filename):
     return modified
 
 # traverse files and print them
-def traverse(folder_path):
+def traverse(folder_path, recursive=False, exceptions=[], only=None):
+
     for path, subdirs, files in os.walk(folder_path):
 
-        # files
-        for name in files:
-            print("[+] Finded file: '" + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
-        
-        # folders
-        for name in subdirs:
-            print("[+] Finded folder: " + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
+        # recursive
+        if recursive or ((not recursive) and (path == folder_path)):
+
+            # files
+            if (not only) or (only == "files"):
+
+                for name in files:
+
+                     # verify if file is script
+                    if name == SCRIPT:
+                        continue
+
+                    # exception break
+                    flag = False
+                    if exceptions:
+                        extension = os.path.splitext(name)[1][1:]
+                        for ext in exceptions:
+                            if extension == ext:
+                                flag = True
+                                break
+                    if not flag:
+                        print("[+] Finded file: '" + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
+            
+            # folders
+            if (not only) or (only == "folders"):
+                for name in subdirs:
+                        print("[+] Finded folder: " + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
 
 # main
 if __name__ == "__main__":
@@ -51,4 +75,4 @@ if __name__ == "__main__":
         args.path
     except NameError:
         help()
-    traverse(args.path[0])
+    traverse(args.path[0], args.recursive, args.exceptions, args.only)
