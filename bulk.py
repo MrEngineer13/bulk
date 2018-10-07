@@ -1,6 +1,7 @@
 # import libraries
 import os
 import re
+import argparse
 
 # modify filename
 def rename_convension(filename):
@@ -34,4 +35,20 @@ def traverse(folder_path):
             print("[+] Finded folder: " + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
 
 # main
-traverse(".")
+if __name__ == "__main__":
+
+    # set arguments
+    parser = argparse.ArgumentParser(description='Bulk rename script', add_help=False)
+    parser.add_argument('path', action="store", nargs="*", default=True)
+    parser.add_argument('-e', '--exceptions', action="store", nargs="*", default=False)
+    parser.add_argument('-r', '--recursive', action="store_true", default=False)
+    parser.add_argument('-o', '--only', action="store", default=False, choices=['files', 'folders'])
+    parser.add_argument('-h', '--help', action="store_true", default=False)
+    args = parser.parse_args()
+    
+    # with path given
+    try:
+        args.path
+    except NameError:
+        help()
+    traverse(args.path[0])
