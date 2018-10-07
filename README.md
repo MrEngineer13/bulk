@@ -1,7 +1,7 @@
 # bulk
 
 ```
-Usage: python bulk.py PATH [OPTIONS]
+Usage: python3 bulk.py PATH [OPTIONS]
 Bulk rename files and folder from PATH
 
 Available options:
