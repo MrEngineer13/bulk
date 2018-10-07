@@ -16,7 +16,7 @@ def help():
     print("{0: <20} {1: >20}".format("-o, --only", "Apply renaming only on files/folders"))
     print("{0: <20} {1: >20}".format("-h, --help", "Display this help and exit"))
     print("\nExample of usage:")
-    print("python bulk.py ./website -r -e html css js -o files")
+    print("python3 bulk.py ./website -r -e html css js -o files")
     exit()
 
 # modify filename
@@ -64,12 +64,19 @@ def traverse(folder_path, recursive=False, exceptions=[], only=None):
                                 flag = True
                                 break
                     if not flag:
-                        print("[+] Finded file: '" + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
-            
+                        print("[+] Renaming file '" + name + "'(from subpath '" + path + "') as '" + rename_convension(name) + "'")
+                        file_path = os.path.join(path, name)
+                        new_name = os.path.join(path, rename_convension(name))
+                        os.rename(file_path, new_name)
+
             # folders
             if (not only) or (only == "folders"):
                 for name in subdirs:
-                        print("[+] Finded folder: " + name + "' at subpath '" + path + "' will be renamed as '" + rename_convension(name) + "'")
+                        print("[+] Renaming folder '" + name + "'(from subpath '" + path + "') as '" + rename_convension(name) + "'")
+                        file_path = os.path.join(path, name)
+                        new_name = os.path.join(path, rename_convension(name))
+                        os.rename(file_path, new_name)
+                        name = rename_convension(name)
 
 # main
 if __name__ == "__main__":
