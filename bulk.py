@@ -6,6 +6,19 @@ import argparse
 # constants
 SCRIPT = "bulk.py"
 
+# print help
+def help():
+    print("Usage: python bulk.py PATH [OPTIONS]")
+    print("Bulk rename files and folder from PATH\n")
+    print("Available options:")
+    print("{0: <20} {1: >20}".format("-e, --except", "Except from renaming given extensions"))
+    print("{0: <20} {1: >20}".format("-r, --recursive", "Recursive enter in folders "))
+    print("{0: <20} {1: >20}".format("-o, --only", "Apply renaming only on files/folders"))
+    print("{0: <20} {1: >20}".format("-h, --help", "Display this help and exit"))
+    print("\nExample of usage:")
+    print("python bulk.py ./website -r -e html css js -o files")
+    exit()
+
 # modify filename
 def rename_convension(filename):
 
@@ -70,6 +83,10 @@ if __name__ == "__main__":
     parser.add_argument('-h', '--help', action="store_true", default=False)
     args = parser.parse_args()
     
+    # help
+    if args.help:
+        help()
+
     # with path given
     try:
         args.path
