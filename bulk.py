@@ -1,23 +1,9 @@
+#!/usr/bin/env python3
 # import libraries
 import os
 import re
 import argparse
 
-# constants
-SCRIPT = "bulk.py"
-
-# print help
-def help():
-    print("Usage: python bulk.py PATH [OPTIONS]")
-    print("Bulk rename files and folder from PATH\n")
-    print("Available options:")
-    print("{0: <20} {1: >20}".format("-e, --except", "Except from renaming given extensions"))
-    print("{0: <20} {1: >20}".format("-r, --recursive", "Recursive enter in folders "))
-    print("{0: <20} {1: >20}".format("-o, --only", "Apply renaming only on files/folders"))
-    print("{0: <20} {1: >20}".format("-h, --help", "Display this help and exit"))
-    print("\nExample of usage:")
-    print("python3 bulk.py ./website -r -e html css js -o files")
-    exit()
 
 # modify filename
 def rename_convension(filename):
@@ -39,7 +25,13 @@ def rename_convension(filename):
     return modified
 
 # traverse files and print them
-def traverse(folder_path, recursive=False, exceptions=[], only=None):
+def traverse(
+        folder_path,
+        recursive=False,
+        exceptions=tuple(),
+        only=None,
+        script_name=__file__,
+):
 
     for path, subdirs, files in os.walk(folder_path):
 
@@ -52,7 +44,9 @@ def traverse(folder_path, recursive=False, exceptions=[], only=None):
                 for name in files:
 
                      # verify if file is script
-                    if name == SCRIPT:
+                    if name == script_name:
+                        # @TODO: here is might be a case with a same filename
+                        # subdirectories might contain files with such names
                         continue
 
                     # exception break
@@ -82,21 +76,25 @@ def traverse(folder_path, recursive=False, exceptions=[], only=None):
 if __name__ == "__main__":
 
     # set arguments
-    parser = argparse.ArgumentParser(description='Bulk rename script', add_help=False)
-    parser.add_argument('path', action="store", nargs="*", default=True)
-    parser.add_argument('-e', '--exceptions', action="store", nargs="*", default=False)
-    parser.add_argument('-r', '--recursive', action="store_true", default=False)
-    parser.add_argument('-o', '--only', action="store", default=False, choices=['files', 'folders'])
-    parser.add_argument('-h', '--help', action="store_true", default=False)
+    parser = argparse.ArgumentParser(
+        description='Bulk rename files and folder from PATH',
+        epilog='Example of usage: ./bulk.py ./website -r -e html css js -o files',
+        add_help=True,
+    )
+    parser.add_argument('path', action="store", nargs="*", default=True,
+                        help='*REQUIRED* path to a directory with files')
+    parser.add_argument('-e', '--exceptions', action="store", nargs="*", default=False,
+                        help='Except from renaming given extensions')
+    parser.add_argument('-r', '--recursive', action="store_true", default=False,
+                        help='Recursive enter in folders')
+    parser.add_argument('-o', '--only', action="store", default=False, choices=['files', 'folders'],
+                        help='Apply renaming only on files/folders')
     args = parser.parse_args()
-    
-    # help
-    if args.help:
-        help()
 
-    # with path given
-    try:
-        args.path
-    except NameError:
-        help()
-    traverse(args.path[0], args.recursive, args.exceptions, args.only)
+    if hasattr(args, 'path') and isinstance(args.path, list):
+        script_name = __file__.lstrip('.').lstrip('/')
+        traverse(args.path[0], args.recursive, args.exceptions, args.only,
+                 script_name=script_name)
+    else:
+        parser.print_help()
+        exit(1)
